@@ -33,5 +33,5 @@ Stage-Project is a comprehensive platform that allows musicians and venues to co
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you'd like to contribute to this project, please fork the repository and use a feature branch. Pull requests are warmly welcome.
+Contributions are welcome! If you'd like to contribute to this project, please contact me -> emailto: stefanozanolli765@gmail.com
 
