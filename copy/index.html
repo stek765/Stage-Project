@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar&MusicLive</title>
+    <link rel="icon" href="./IMG/LOGO.jpg" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+</head>
+
+<body>
+    <!-- Barra del menu superiore -->
+    <nav class="topbar navbar navbar-expand-md navbar-light bg-light fixed-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0" style="padding-left: 13.2rem;">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#Join" data-translate="participate">Partecipa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#About" data-translate="about">Chi Siamo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="navbar-brand" href="index.html">
+                            <img src="./IMG/Logo_stile_apple-removebg.png" style="width: 100px; height: auto;">
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#Discover" data-translate="discover">Scopri Eventi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#Contacts" data-translate="contacts">Contatti</a>
+                    </li>
+                </ul>
+                <div class="nav-right d-flex align-items-center">
+                    <!-- Selettore della lingua -->
+                    <select id="language-selector" class="form-select form-select-sm me-2"
+                        style="width: auto;height: 2.5rem;">
+                        <option value="it" selected>IT</option>
+                        <option value="en">EN</option>
+                        <option value="de">DE</option>
+                    </select>
+                    <a class="btn" href="#" id="subscribe-btn" style="font-size: 20px;">
+                        <i class="fas fa-bell"></i>
+                    </a>
+                    <a class="btn btn-outline-primary" href="login.html" data-translate="subscribe">Accedi</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modale per la sottoscrizione -->
+    <div class="modal fade" id="subscribe-modal" tabindex="-1" aria-labelledby="subscribe-modal-label"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subscribe-modal-label">Newsletter</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p data-translate="newsletter">Rimani aggiornato su tutti gli eventi tramite mail oppure installa la
+                        nostra <a href="link-a-sito-app">App</a>.</p>
+                    <form id="subscribe-form">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iscriviti</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Carosello Bootstrap -->
+    <div id="carouselExampleFade" class="carousel slide carousel-fade carousel-custom" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="1"
+                aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="2"
+                aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="3"
+                aria-label="Slide 4"></button>
+            <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="4"
+                aria-label="Slide 5"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="./IMG/2.jpg" class="d-block w-100" alt="Immagine 1">
+            </div>
+            <div class="carousel-item">
+                <img src="./IMG/1.jpg" class="d-block w-100" alt="Immagine 2">
+            </div>
+            <div class="carousel-item">
+                <img src="./IMG/3.jpg" class="d-block w-100" alt="Immagine 3">
+            </div>
+            <div class="carousel-item">
+                <img src="./IMG/4.jpg" class="d-block w-100" alt="Immagine 4">
+            </div>
+            <div class="carousel-item">
+                <img src="./IMG/5.jpg" class="d-block w-100" alt="Immagine 5">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <!-- Sezione Sotto Carosello -->
+    <div class="container-custom1">
+        <!-- Sezione Chi Siamo -->
+        <div id="About" class="section container my-5">
+            <h2 data-translate="about">Chi Siamo</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p data-translate="aboutP1">Benvenuti in Bar&MusicLive! Siamo un gruppo di appassionati di musica
+                        dal vivo e amiamo creare esperienze uniche per il nostro pubblico. Organizziamo eventi in tutta
+                        Italia, collaborando con i migliori artisti e location.</p>
+                    <p data-translate="aboutP2">Il nostro obiettivo è portare la magia della musica dal vivo in ogni
+                        angolo del paese, creando momenti indimenticabili per tutti i partecipanti. Unisciti a noi e
+                        scopri il mondo di Bar&MusicLive!</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="./IMG/LOGO.jpg" class="img-fluid" alt="Chi Siamo" style="width:80%; margin-left: 20%;">
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Sezione Scopri Eventi -->
+    <div id="Discover" class="section container my-5">
+        <h2 data-translate="discover">Mappa Interattiva</h2>
+        <hr>
+        <p data-translate="discoverP1">Qui puoi trovare gli eventi a Verona di questi giorni.</p>
+
+        <!-- Selezionatore Eventi -->
+        <div class="container my-4">
+            <div class="d-flex align-items-center">
+                <select id="event-selector" class="form-select flex-grow-1">
+                    <option value="" data-translate="selectEvent">Scegli un evento...</option>
+                    <option value="0">Pasion Espaniola</option>
+                    <option value="1">Altrove LIVE</option>
+                    <option value="2">Evento 3</option>
+                </select>
+                <button id="new-btn" class="btn btn-primary ms-3" style="width: auto; padding: 0.375rem 0.75rem;"
+                    data-translate="newButton"><a class="nav-link" href="./evento.html">+</a></button>
+            </div>
+        </div>
+
+        <!-- Pulsante per ottenere le indicazioni -->
+        <div class="container my-3">
+            <button id="directions-btn" class="btn btn-primary" data-translate="directions">Ottieni Indicazioni</button>
+        </div>
+
+
+        <!-- mappa eventi -->
+        <div id="map" style="height: 60vh;"></div> <!-- Imposta l'altezza della mappa -->
+        <script>
+            // Inizializza la mappa
+            var map = L.map('map').setView([45.4400, 10.9930], 15.3);
+            var userPositionSet = false; // Flag per determinare se la posizione dell'utente è stata impostata
+
+            // Aggiungi il layer di tile
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Aggiungi un marker di esempio
+            var customIcon = L.icon({
+                iconUrl: './IMG/redpin.png', // Percorso all'immagine del marker
+                iconSize: [38, 50], // Dimensione dell'icona
+                iconAnchor: [19, 50], // Punto dell'icona che corrisponde alla posizione del marker (centro inferiore)
+                popupAnchor: [0, -50] // Punto da dove si apre il popup rispetto all'icona (sopra il centro)
+            });
+
+            // Posizioni dei marker (esempio)
+            var events = [
+                { lat: 45.4384, lon: 10.9916, name: 'Pasion Espaniola', image: './IMG/loc1.jpg', description: 'Una descrizione dell\'evento 1.' },
+                { lat: 45.4397, lon: 10.9924, name: 'Altrove LIVE', image: './IMG/loc2.jpg', description: 'Una descrizione dell\'evento 2.' },
+                { lat: 45.4402, lon: 10.9932, name: 'Evento 3', image: './IMG/loc3.jpg', description: 'Una descrizione dell\'evento 3.' }
+            ];
+
+            // Funzione per gestire il clic su un marker dell'evento
+            function onEachEventMarkerClick(event) {
+                // Crea un riquadro di informazioni per l'evento
+                var popupContent = `
+                    <div>
+                        <h3>${event.name}</h3>
+                        <img src="${event.image}" alt="Evento" style="width: 100%; max-width: 200px; margin-bottom: 10px;">
+                        <p>${event.description}</p>
+                        <button onclick="calculateRoute([${event.lat}, ${event.lon}])">Ottieni Indicazioni</button>
+                    </div>
+                `;
+                // Aggiungi il riquadro di informazioni al marker
+                event.marker.bindPopup(popupContent);
+            }
+
+            // Aggiungi marker alla mappa e gestisci il clic su ciascun marker
+            events.forEach(function (event) {
+                event.marker = L.marker([event.lat, event.lon], { icon: customIcon })
+                    .addTo(map)
+                    .on('click', function () {
+                        onEachEventMarkerClick(event);
+                    });
+            });
+
+            var userPosition;
+            var routingControl;
+            var selectedEvent;
+
+            // Funzione chiamata quando la posizione è trovata
+            function onLocationFound(e) {
+                userPosition = e.latlng;
+
+                if (!userPositionSet) {
+                    L.marker(e.latlng).addTo(map)
+                        .bindPopup("You are within " + e.accuracy + " meters from this point").openPopup();
+
+                    L.circle(e.latlng, e.accuracy).addTo(map);
+                    userPositionSet = true; // Imposta il flag sulla posizione dell'utente
+                }
+            }
+
+            // Funzione chiamata quando c'è un errore nella geolocalizzazione
+            function onLocationError(e) {
+                alert(e.message);
+            }
+
+
+            // Configura la mappa per trovare la posizione dell'utente
+            map.on('locationfound', onLocationFound);
+            map.on('locationerror', onLocationError);
+
+            map.locate({ watch: true, setView: false, maxZoom: 16 }); // Inizia la localizzazione
+
+
+
+            // Funzione per calcolare il percorso
+            function calculateRoute(destination) {
+                // Rimuovi il controllo di routing esistente, se presente
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                }
+
+                // Crea un nuovo controllo di routing con le opzioni corrette
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(userPosition),
+                        L.latLng(destination)
+                    ],
+                    lineOptions: {
+                        styles: [{ color: 'blue', opacity: 0.6, weight: 4 }]
+                    },
+                    routeWhileDragging: true,
+                    show: false, // Imposta su false per nascondere le istruzioni di percorso
+                    createMarker: function () { return null; } // Disabilita la creazione automatica di marker per i waypoint
+
+                    // Disabilita la creazione automatica di marker per i waypoint
+                }).addTo(map);
+            }
+
+
+
+            // Event listener per il menu a tendina
+            document.getElementById('event-selector').addEventListener('change', function (e) {
+                var selectedIndex = e.target.value;
+                if (selectedIndex !== "") {
+                    selectedEvent = events[selectedIndex];
+                } else {
+                    selectedEvent = null;
+                }
+            });
+
+
+            // Event listener per il pulsante "Ottieni Indicazioni"
+            document.getElementById('directions-btn').addEventListener('click', function () {
+                if (selectedEvent) {
+                    if (userPosition) {
+                        calculateRoute([selectedEvent.lat, selectedEvent.lon]);
+                    } else {
+                        alert("Impossibile ottenere la posizione dell'utente.");
+                    }
+                } else {
+                    alert("Seleziona un evento prima di ottenere le indicazioni.");
+                }
+            });
+        </script>
+
+    </div>
+
+
+
+
+    <div class="container-custom2">
+        <!-- Sezione Partecipa -->
+        <div id="Join" class="section container my-5">
+            <h2 style="text-align: center;" data-translate="joinUs">Unisciti a noi</h2>
+            <hr>
+            <!-- Sezione per Musicisti -->
+            <div class="row my-4">
+                <div class="col-md-6 text-center">
+                    <h3 data-translate="musician">Sei un musicista?</h3>
+                    <p class="custom-paragraph" style="text-align: left;" data-translate="joinUsParagraph">Vieni a
+                        suonare con noi e accendi la serata. Diventa parte della nostra comunità musicale e fai vibrare
+                        il pubblico con il tuo talento!</p>
+                </div>
+                <!-- Sezione per Locali -->
+                <div class="col-md-6 text-center">
+                    <h3 data-translate="venue">Hai un locale?</h3>
+                    <p class="custom-paragraph" data-translate="venueParagraph">Organizza i tuoi eventi e crea
+                        l'atmosfera giusta per serate indimenticabili. Collabora con noi per portare la musica dal vivo
+                        nel tuo locale!</p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-primary my-3" href="signup.html" data-translate="joinUs">Unisciti a noi</a>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Sezione Contatti e Footer -->
+    <footer id="Contacts" class="footer bg-dark text-white py-5" style="padding-bottom: 23px !important;">
+        <div id="first-footer" class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3 data-translate="legalInfo">Informazioni Legali</h3>
+                    <hr>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white" data-translate="terms">Termini e condizioni</a></li>
+                        <br>
+                        <li><a href="#" class="text-white" data-translate="privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h3 data-translate="contacts">Contatti</h3>
+                    <hr>
+                    <p class="text-white" data-translate="address">Indirizzo: Via Nome della Via, Numero Civico</p>
+                    <p class="text-white" data-translate="phone">Telefono: +1234567890</p>
+                    <p class="text-white" data-translate="email">Email: info@example.com</p>
+                </div>
+                <div class="col-md-4">
+                    <h3 data-translate="social">Social</h3>
+                    <hr>
+                    <ul class="list-unstyled social-icons social-icons-inline d-flex">
+                        <li>
+                            <a href="https://www.facebook.com" class="text-white" target="_blank">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.twitter.com" class="text-white" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.instagram.com" class="text-white" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-footer text-center pt-custom">
+            <p class="m-0">&copy; 2024 Bar&MusicLive. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <!-- Script Bootstrap e personalizzati -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+
+    <script>
+
+        document.getElementById('subscribe-btn').addEventListener('click', function () {
+            var subscribeModal = new bootstrap.Modal(document.getElementById('subscribe-modal'));
+            subscribeModal.show();
+        });
+
+        document.getElementById('subscribe-modal').addEventListener('hidden.bs.modal', function () {
+            var modals = document.querySelectorAll('.modal-backdrop');
+            modals.forEach(function (modal) {
+                modal.remove();
+            });
+            document.body.classList.remove('modal-open');
+            document.body.style = '';
+        });
+
+        document.getElementById('subscribe-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var email = document.getElementById('email').value;
+            alert('Grazie per esserti iscritto! Email: ' + email);
+            var subscribeModal = bootstrap.Modal.getInstance(document.getElementById('subscribe-modal'));
+            subscribeModal.hide();
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var navbar = document.querySelector('.topbar');
+            var lastScrollTop = 0;
+            var scrollThreshold = 100; // Numero di pixel da scrollare prima che la navbar si nasconda
+
+            window.addEventListener('scroll', function () {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > scrollThreshold) {
+                    if (scrollTop > lastScrollTop) {
+                        // Scroll down
+                        navbar.classList.add('hidden-navbar');
+                    } else {
+                        // Scroll up
+                        navbar.classList.remove('hidden-navbar');
+                    }
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
+
+            // Show the navbar when the mouse moves to the top of the page
+            document.addEventListener('mousemove', function (event) {
+                if (event.clientY < 50) {
+                    navbar.classList.remove('hidden-navbar');
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var subscribeBtn = document.getElementById('subscribe-btn');
+            var subscribeModal = new bootstrap.Modal(document.getElementById('subscribe-modal'));
+
+            subscribeBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+                subscribeModal.show();
+            });
+
+            document.getElementById('subscribe-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                // Handle form submission (e.g., via AJAX)
+                subscribeModal.hide();
+                alert('Grazie per esserti iscritto!');
+            });
+
+        });
+
+        async function fetchTranslations(lang) {
+            const response = await fetch(`https://localhost:8083/translations_${lang}.json`);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${lang} translations`);
+            }
+            return response.json();
+        }
+
+        function applyTranslations(translations) {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[key]) {
+                    element.textContent = translations[key];
+                }
+            });
+        }
+
+        async function changeLanguage(lang) {
+            try {
+                const translations = await fetchTranslations(lang);
+                applyTranslations(translations);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.getElementById('language-selector').addEventListener('change', function () {
+            const selectedLang = this.value;
+            changeLanguage(selectedLang);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const initialLang = document.getElementById('language-selector').value;
+            changeLanguage(initialLang);
+        });
+
+    </script>
+</body>
+
+</html>

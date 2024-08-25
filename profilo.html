@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo Utente</title>
+    <link rel="stylesheet" href="./static/profilo.css">
+
+    <style>
+        /* Stile per la finestra modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            margin-left: 10px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            verifyAuth().then(function (isAuthenticated) {
+                var authLinksDiv = document.getElementById('pulsantiAuth');
+                if (!isAuthenticated) {
+                    window.location.href = './login.html';
+                } else {
+                    // Variabile globale per memorizzare i dati dell'utente
+                    var user_data = {};
+
+                    // Recupero dei dati utente
+                    $.ajax({
+                        url: './connection/userData.php',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { action: 'get_account' },
+                        success: function (response) {
+                            if (response.success) {
+                                user_data = response.data.user;
+                                $('.username').html('<strong>Nome: &nbsp;</strong> ' + user_data.nome_completo);
+                                $('.email').html('<strong>Email: &nbsp;</strong> ' + user_data.email);
+                                $('.nazionalita').html('<strong>Nazionalità: &nbsp;</strong> ' + user_data.nazionalità);
+                                $('.data').html('<strong>Data Creazione Account: &nbsp;</strong> ' + user_data.created_at);
+
+                                // $('.telefono').html('<strong>Telefono:</strong> ' + response.data.phone);
+                                // $('.indirizzo').html('<strong>Indirizzo:</strong> ' + response.data.address);
+                                // $('.data_nascita').html('<strong>Data di Nascita:</strong> ' + response.data.birthdate);
+                                out = "";
+                                artista_data = response.data.artista;
+                                if (artista_data != null) {
+                                    artista_data.forEach(element => {
+                                        art = element[0];
+                                        ban = element[1];
+                                        out += "<div style='border: solid; border-radius: 20px; padding-left: 10px; margin-bottom: 5px'>" +
+                                            "<h2>Dettagli artista</h2>" +
+                                            "<ul>" +
+                                            "<li class='nomeArte" + art.id + "'><strong>Nome d'arte: &nbsp;</strong> " + art.nome_arte + "</li>" +
+                                            "<li class='tipoArtista" + art.id + "'><strong>Tipo: &nbsp;</strong> " + art.tipo_artista + "</li>" +
+                                            "<li class='genereMusicale" + art.id + "'><strong>Genere musicale: &nbsp;</strong> " + art.genere_musicale + "</li>";
+                                        out += "</br>";
+                                        out += "<button class='edit-btn' onclick='openUpdateArtista(" + art.id + ")' data-id='" + art.id + "'>Modifica artista</button> &nbsp;" +
+                                            "<button class='logout-btn' onclick='deleteArtista(" + art.id + ")' data-id='" + art.id + "'>Elimina artista</button>";
+                                        out += "</br>";
+                                        if (ban != "") {
+                                            out += "<h3>Componenti band:</h3>";
+                                            ban.forEach(function (membro) {
+                                                out += "<div style='border: solid; border-radius: 20px; padding-left: 10px; margin-bottom: 5px'><ul><li><strong>nome: &nbsp;</strong> " + membro.nome_arte + "</li>" +
+                                                    "<li><strong>ruolo: &nbsp;</strong> " + membro.ruolo + "</li></ul></div>";
+                                                // console.log('nome: ' + membro.nome_arte + ' ruolo: ' + membro.ruolo);
+                                            });
+                                        }
+                                        out += "</ul></div>";
+                                    });
+                                }
+                                locale_data = response.data.locale;
+                                if (locale_data != null) {
+                                    locale_data.forEach(element => {
+                                        out += "<div style='border: solid; border-radius: 20px; padding-left: 10px; margin-bottom: 5px'>" +
+                                            "<h2>Dettagli locale</h2>" +
+                                            "<ul>" +
+                                            "<li class='nomeLocale" + element.id + "'><strong>Nome locale: &nbsp;</strong> " + element.nome_locale + "</li>" +
+                                            "<li class='indirizzo" + element.id + "'><strong>Indirizzo: &nbsp;</strong> " + element.indirizzo + "</li>" +
+                                            "<button class='edit-btn' onclick='openUpdateLocale(" + element.id + ")' data-id='" + element.id + "'>Modifica locale</button> &nbsp;" +
+                                            "<button class='logout-btn' onclick='deleteLocale(" + element.id + ")' data-id='" + element.id + "'>Elimina locale</button>" +
+                                            "</ul></div>";
+                                    });
+                                }
+
+                                document.getElementById("details").innerHTML = out;
+                            } else {
+                                //Swal.fire('Errore', 'Impossibile caricare i dati utente', 'error');
+                                alert('Impossibile caricare i dati utente. Riprovare più tardi.');
+                                //window.location.assign('./index.html');
+                            }
+                        },
+                        error: function () {
+                            //Swal.fire('Errore', 'Si è verificato un errore durante la richiesta', 'error');
+                            alert('Impossibile caricare i dati utente. Riprovare più tardi.');
+                            //window.location.assign('./index.html');
+                        }
+                    });
+
+                    /*---------------------USER------------------------------------------------------------------------------------*/
+
+                    // Funzione per aprire la finestra modale
+                    function openUpdateUser() {
+                        // Pre-compila i campi della finestra modale con i dati utente esistenti
+                        $('#nome_completoUpdate').val(user_data.nome_completo);
+                        $('#emailUpdate').val(user_data.email);
+                        $('#nazionalitaUpdate').val(user_data.nazionalità);
+
+                        document.getElementById('modalUpdateUser').style.display = "block";
+                    }
+
+                    // Funzione per chiudere la finestra modale
+                    function closeModal() {
+                        document.getElementById('modalUpdateUser').style.display = "none";
+                    }
+
+                    // Funzione per inviare i dati aggiornati tramite AJAX
+                    function submitUpdate() {
+                        var nome_completo = $('#nome_completoUpdate').val();
+                        var email = $('#emailUpdate').val();
+                        var nazionalita = $('#nazionalitaUpdate').val();
+                        // console.log(nome_completo + " - " + email + " - " + nazionalita);
+                        $.ajax({
+                            url: './connection/userData.php',
+                            type: 'POST',
+                            data: {
+                                action: 'update_user',
+                                nome_completo: nome_completo,
+                                email: email,
+                                nazionalita: nazionalita
+                            },
+                            success: function (response) {
+                                // console.log(response);
+                                response = JSON.parse(response);
+                                if (response.success) {
+                                    Swal.fire('Successo', 'Profilo aggiornato con successo', 'success')
+                                        .then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                    closeModal();
+                                } else {
+                                    Swal.fire('Errore', 'Impossibile aggiornare il profilo, riempire tutti i campi', 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Errore', 'Si è verificato un errore durante l\'aggiornamento', 'error')
+                                    .then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                            }
+                        });
+                    }
+
+                    //delete data
+                    $('#delete-btn').on('click', function () {
+                        var conferma = confirm("Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.");
+
+                        if (conferma) {
+                            $.ajax({
+                                url: './connection/userData.php',
+                                type: 'POST',
+                                data: { action: 'delete_account' },
+                                success: function (response) {
+                                    //console.log(response);
+                                    response = JSON.parse(response);
+                                    if (response.success === true) {
+                                        Swal.fire('Successo', 'Account eliminato con successo', 'success')
+                                            .then((result) => {
+                                                if (result.isConfirmed) {
+                                                    //location.reload();
+                                                    window.location.href = './connection/logout.php';
+                                                }
+                                            });
+
+                                    } else {
+                                        Swal.fire('Errore', 'C\'è stato un problema nell\'eliminazione dell\'account. Riprova più tardi.', 'error')
+                                            .then((result) => {
+                                                if (result.isConfirmed) {
+                                                    location.reload();
+                                                }
+                                            });
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire('Errore', 'C\'è stato un problema nell\'eliminazione dell\'account. Riprova più tardi.', 'error')
+                                        .then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                    // console.log('Errore nella connessione al server.');
+                                }
+                            });
+                        }// else {
+                        //     Swal.fire('Errore', 'Eliminazione account annullata.', 'error')
+                        //         .then((result) => {
+                        //             if (result.isConfirmed) {
+                        //                 location.reload();
+                        //             }
+                        //         });
+                        // }
+                    });
+
+                    // Collegamento delle funzioni agli eventi
+                    window.openUpdateUser = openUpdateUser;
+                    window.closeModal = closeModal;
+                    window.submitUpdate = submitUpdate;
+
+                    /*---------------------LOCALE------------------------------------------------------------------------------------*/
+
+                    // Funzione per aprire la finestra modale
+                    function openUpdateLocale(id) {
+                        // Pre-compila i campi della finestra modale con i dati utente esistenti
+                        $('#nome_localeUpdate').val($('.nomeLocale' + id).html().split("</strong>")[1].trim());
+                        $('#indirizzoUpdate').val($('.indirizzo' + id).html().split("</strong>")[1].trim());
+
+                        // $('#idLocaleUpdate').val(id);
+                        $('.modal-buttons button[type="button"]').last().attr('onclick', `submitUpdateLocale(${id})`);
+
+                        // $('#usernameUpdate').val($('.username').html().split("</strong>")[1].trim());
+                        // $('#emailUpdate').val($('.email').html().split("</strong>")[1].trim());
+                        // $('#nazionalitaUpdate').val($('.nazionalita').html().split("</strong>")[1].trim());
+
+                        document.getElementById('modalUpdateLocale').style.display = "block";
+                    }
+
+                    // Funzione per chiudere la finestra modale
+                    function closeModalLocale() {
+                        document.getElementById('modalUpdateLocale').style.display = "none";
+                    }
+
+                    // Funzione per inviare i dati aggiornati tramite AJAX
+                    function submitUpdateLocale(id) {
+                        var nome_locale = $('#nome_localeUpdate').val();
+                        var indirizzo = $('#indirizzoUpdate').val();
+                        // var idLocale = $('#idLocaleUpdate').val();
+
+                        // console.log(nome_locale + " - " + indirizzo + " - " + id);
+
+                        $.ajax({
+                            url: './connection/userData.php',
+                            type: 'POST',
+                            data: {
+                                action: 'update_locale',
+                                nome_locale: nome_locale,
+                                indirizzo: indirizzo,
+                                idLocale: id
+                            },
+                            success: function (response) {
+                                console.log(response);
+                                response = JSON.parse(response);
+                                if (response.success) {
+                                    Swal.fire('Successo', 'Dati aggiornati con successo', 'success')
+                                        .then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                    closeModal();
+                                } else {
+                                    Swal.fire('Errore', 'Impossibile aggiornare il profilo, riempire tutti i campi', 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Errore', 'Si è verificato un errore durante l\'aggiornamento', 'error')
+                                    .then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                            }
+                        });
+                    }
+
+                    function deleteLocale(id) {
+                        // var idLocale = $('#idLocaleUpdate').val();
+
+                        console.log(id);
+                        var conferma = confirm("Sei sicuro di voler eliminare questo evento? Questa azione è irreversibile.");
+
+                        if (conferma) {
+                            $.ajax({
+                                url: './connection/userData.php',
+                                type: 'POST',
+                                data: {
+                                    action: 'delete_locale',
+                                    idLocale: id
+                                },
+                                success: function (response) {
+                                    console.log(response);
+                                    response = JSON.parse(response);
+                                    if (response.success) {
+                                        Swal.fire('Successo', 'Locale eliminato con successo', 'success')
+                                            .then((result) => {
+                                                if (result.isConfirmed) {
+                                                    location.reload();
+                                                }
+                                            });
+                                        closeModal();
+                                    } else {
+                                        Swal.fire('Errore', 'Impossibile eliminare il profilo, riempire tutti i campi', 'error');
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire('Errore', 'Si è verificato un errore durante l\'eliminazione', 'error')
+                                        .then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                }
+                            });
+                        }
+                    }
+
+                    // Collegamento delle funzioni agli eventi
+                    window.openUpdateLocale = openUpdateLocale;
+                    window.closeModalLocale = closeModalLocale;
+                    window.submitUpdateLocale = submitUpdateLocale;
+                    window.deleteLocale = deleteLocale;
+
+                    /*---------------------ARTISTA------------------------------------------------------------------------------------*/
+
+                    // Funzione per aprire la finestra modale
+                    function openUpdateArtista(id) {
+                        // Pre-compila i campi della finestra modale con i dati utente esistenti
+                        $('#nome_arteUpdate').val($('.nomeArte' + id).html().split("</strong>")[1].trim());
+                        $('#tipoUpdate').val($('.tipoArtista' + id).html().split("</strong>")[1].trim());
+                        $('#genereUpdate').val($('.genereMusicale' + id).html().split("</strong>")[1].trim());
+
+                        // console.log(id);
+
+                        $('.modal-buttons button[type="button"]').last().attr('onclick', `submitUpdateArtista(${id})`);
+
+                        document.getElementById('modalUpdateArtista').style.display = "block";
+                    }
+
+                    // Funzione per chiudere la finestra modale
+                    function closeModalArtista() {
+                        document.getElementById('modalUpdateArtista').style.display = "none";
+                    }
+
+                    // Funzione per inviare i dati aggiornati tramite AJAX
+                    function submitUpdateArtista(id) {
+                        var nome_artista = $('#nome_arteUpdate').val();
+                        var tipo = $('#tipoUpdate').val();
+                        var genere = $('#genereUpdate').val();
+
+                        // console.log(nome_artista + " - " + tipo + " - " + genere + " - " + id);
+
+                        $.ajax({
+                            url: './connection/userData.php',
+                            type: 'POST',
+                            data: {
+                                action: 'update_artista',
+                                nome_artista: nome_artista,
+                                tipo: tipo,
+                                genere: genere,
+                                idArtista: id
+                            },
+                            success: function (response) {
+                                //console.log(response);
+                                response = JSON.parse(response);
+                                if (response.success) {
+                                    Swal.fire('Successo', 'Dati aggiornati con successo', 'success')
+                                        .then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                    closeModal();
+                                } else {
+                                    Swal.fire('Errore', 'Impossibile aggiornare il profilo, riempire tutti i campi', 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Errore', 'Si è verificato un errore durante l\'aggiornamento', 'error')
+                                    .then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                            }
+                        });
+                    }
+
+                    function deleteArtista(id) {
+                        // var idLocale = $('#idLocaleUpdate').val();
+
+                        //console.log(id);
+                        var conferma = confirm("Sei sicuro di voler eliminare questo evento? Questa azione è irreversibile.");
+
+                        if (conferma) {
+                            $.ajax({
+                                url: './connection/userData.php',
+                                type: 'POST',
+                                data: {
+                                    action: 'delete_artista',
+                                    idArtista: id
+                                },
+                                success: function (response) {
+                                    console.log(response);
+                                    response = JSON.parse(response);
+                                    if (response.success) {
+                                        Swal.fire('Successo', 'Artista eliminato con successo', 'success')
+                                            .then((result) => {
+                                                if (result.isConfirmed) {
+                                                    location.reload();
+                                                }
+                                            });
+                                        closeModal();
+                                    } else {
+                                        Swal.fire('Errore', 'Impossibile eliminare il profilo, riprova più tardi', 'error');
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire('Errore', 'Si è verificato un errore durante l\'eliminazione', 'error')
+                                        .then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
+                                }
+                            });
+                        }
+                    }
+
+                    // Collegamento delle funzioni agli eventi
+                    window.openUpdateArtista = openUpdateArtista;
+                    window.closeModalArtista = closeModalArtista;
+                    window.submitUpdateArtista = submitUpdateArtista;
+                    window.deleteArtista = deleteArtista;
+                }
+            }).catch(function (error) {
+                console.error(error);
+            });
+        });
+
+        function verifyAuth() {
+            return new Promise(function (resolve, reject) {
+                $.ajax({
+                    url: './connection/check_auth.php', // Modifica con il percorso corretto del tuo script PHP
+                    type: 'GET',
+                    success: function (response) {
+                        response = JSON.parse(response);
+                        resolve(response.authenticated);
+                    },
+                    error: function () {
+                        reject('Errore durante la verifica dell\'autenticazione.');
+                    }
+                });
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="./IMG/profile_icon3.svg" alt="Foto Profilo" class="profile-picture">
+            <h1 class="user-name">Nome Utente</h1>
+            <p class="user-bio">Sezione Profilo Utente. Qui puoi vedere o modificare i tuoi dati</p>
+        </div>
+
+        <div class="profile-details">
+            <h2>Dettagli Utente</h2>
+            <ul>
+                <li class="username"><strong>Nome:</strong></li>
+                <li class="email"><strong>Email:</strong></li>
+                <li class="nazionalita"><strong>Nazionalità:</strong></li>
+                <li class="data"><strong>Data Creazione Account:</strong></li>
+                <button class="edit-btn" onclick="openUpdateUser()">Modifica</button>
+            </ul>
+            <div id="details"></div>
+            <h2>Link Social</h2>
+            <ul>
+                <li><strong>Facebook:</strong> <a href="#" id="facebookLink">Inserisci il link Facebook</a></li>
+                <li><strong>Instagram:</strong> <a href="#" id="instagramLink">Inserisci il link Instagram</a></li>
+            </ul>
+        </div>
+
+        <div class="register-button">
+            <a href="form.html" onclick="showPopup(event)">
+                <img src="./IMG/plus2.png" alt="Registration" class="register-icon">
+            </a>
+        </div>
+
+        <div class="profile-actions">
+            <a class="edit-btn" href="./connection/logout.php" style="text-decoration: none;">Logout</a>
+            <!-- <button class="edit-btn" onclick="/connection/logout.php">Logout</button> -->
+            <a class="edit-btn" href="./index.html" style="text-decoration: none;">Back to home</a>
+            <button class="logout-btn" id="delete-btn">Elimina Account</button>
+        </div>
+    </div>
+
+    <!-- Script per il popup -->
+    <script>
+        // Funzione per mostrare il popup
+        function showPopup(event) {
+            event.preventDefault(); // Impedisci l'azione predefinita del browser
+            Swal.fire({
+                title: 'Crea un account',
+                text: 'Puoi creare un account come locale o musicista e partecipare ad eventi!',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Annulla'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Reindirizza l'utente alla pagina di registrazione
+                    window.location.href = "form.html";
+                }
+            });
+        }
+
+        // Funzione per rendere i link social cliccabili
+        document.getElementById('facebookLink').addEventListener('click', function (event) {
+            event.preventDefault();
+            const link = prompt("Inserisci il tuo link Facebook:");
+            if (link) {
+                this.href = link;
+                this.textContent = link;
+            }
+        });
+
+        document.getElementById('instagramLink').addEventListener('click', function (event) {
+            event.preventDefault();
+            const link = prompt("Inserisci il tuo link Instagram:");
+            if (link) {
+                this.href = link;
+                this.textContent = link;
+            }
+        });
+    </script>
+
+    <!-- Finestra modale per modificare il profilo utente -->
+    <div id="modalUpdateUser" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Modifica Profilo Utente</h2>
+            <form id="updateUserForm">
+                <label for="nome_completo">Nome Completo:</label>
+                <input type="text" id="nome_completoUpdate" name="nome_completo"
+                    onkeydown="return disableEnterKey(event);" required><br><br>
+
+                <label for="email">Email:</label>
+                <input type="email" id="emailUpdate" name="email" onkeydown="return disableEnterKey(event);"
+                    required><br><br>
+
+                <label for="nazionalita">Nazionalità:</label>
+                <!-- <input type="text" id="nazionalita" name="nazionalita" required><br><br> -->
+                <select id="nazionalitaUpdate" class="form-control" onkeydown="return disableEnterKey(event);" required>
+                    <option value="">Select Nationality</option>
+                    <option value="AL">Albania</option>
+                    <option value="AD">Andorra</option>
+                    <option value="AT">Austria</option>
+                    <option value="BE">Belgio</option>
+                    <option value="BY">Bielorussia</option>
+                    <option value="BA">Bosnia ed Erzegovina</option>
+                    <option value="BG">Bulgaria</option>
+                    <option value="CY">Cipro</option>
+                    <option value="HR">Croazia</option>
+                    <option value="DK">Danimarca</option>
+                    <option value="EE">Estonia</option>
+                    <option value="FI">Finlandia</option>
+                    <option value="FR">Francia</option>
+                    <option value="DE">Germania</option>
+                    <option value="GR">Grecia</option>
+                    <option value="IE">Irlanda</option>
+                    <option value="IS">Islanda</option>
+                    <option value="IT">Italia</option>
+                    <option value="XK">Kosovo</option>
+                    <option value="LV">Lettonia</option>
+                    <option value="LI">Liechtenstein</option>
+                    <option value="LT">Lituania</option>
+                    <option value="LU">Lussemburgo</option>
+                    <option value="MK">Macedonia del Nord</option>
+                    <option value="MT">Malta</option>
+                    <option value="MD">Moldavia</option>
+                    <option value="MC">Monaco</option>
+                    <option value="ME">Montenegro</option>
+                    <option value="NO">Norvegia</option>
+                    <option value="NL">Paesi Bassi</option>
+                    <option value="PL">Polonia</option>
+                    <option value="PT">Portogallo</option>
+                    <option value="GB">Regno Unito</option>
+                    <option value="CZ">Repubblica Ceca</option>
+                    <option value="RO">Romania</option>
+                    <option value="RU">Russia</option>
+                    <option value="SM">San Marino</option>
+                    <option value="RS">Serbia</option>
+                    <option value="SK">Slovacchia</option>
+                    <option value="SI">Slovenia</option>
+                    <option value="ES">Spagna</option>
+                    <option value="SE">Svezia</option>
+                    <option value="CH">Svizzera</option>
+                    <option value="UA">Ucraina</option>
+                    <option value="HU">Ungheria</option>
+                    <option value="VA">Vaticano</option>
+                </select><br><br>
+
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModal()">Chiudi</button>
+                    <button type="button" onclick="submitUpdate()">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Finestra modale per modificare il profilo locale -->
+    <div id="modalUpdateLocale" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalLocale()">&times;</span>
+            <h2>Modifica Locale</h2>
+            <form id="updateLocaleForm">
+                <label for="nome_locale">Nome Locale:</label>
+                <input type="text" id="nome_localeUpdate" name="nome_locale" onkeydown="return disableEnterKey(event);"
+                    required><br><br>
+
+                <label for="indirizzo">Indirizzo:</label>
+                <input type="text" id="indirizzoUpdate" name="indirizzo" onkeydown="return disableEnterKey(event);"
+                    required><br><br>
+
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModalLocale()">Chiudi</button>
+                    <button type="button" onclick="submitUpdateLocale()">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Finestra modale per modificare il profilo artista -->
+    <div id="modalUpdateArtista" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalArtista()">&times;</span>
+            <h2>Modifica Artista</h2>
+            <form id="updateArtistaForm">
+                <label for="nome_arte">Nome Artista:</label>
+                <input type="text" id="nome_arteUpdate" name="nome_arte" onkeydown="return disableEnterKey(event);"
+                    required><br><br>
+
+                <label for="tipo">Tipo:</label>
+                <!-- <input type="text" id="tipoUpdate" name="tipo" required><br><br> -->
+                <select name="tipo" id="tipoUpdate" onkeydown="return disableEnterKey(event);" required>
+                    <option value="">Tipo</option>
+                    <option value="Band">Band</option>
+                    <option value="Musicista">Musicista</option>
+                </select><br><br>
+
+                <label for="genere">Genere:</label>
+                <!-- <input type="text" id="genereUpdate" name="genere" required><br><br> -->
+                <select id="genereUpdate" name="genere" onkeydown="return disableEnterKey(event);" required>
+                    <option value="">Genere</option>
+                    <option value="Rock" selected>Rock</option>
+                    <option value="RockLeg">Rock leggero</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Classica">Classica</option>
+                    <option value="Hip Hop">Hip Hop</option>
+                    <option value="Rap">Rap</option>
+                    <option value="Metal">Metal</option>
+                    <option value="Indie">Indie</option>
+                    <option value="Reggae">Reggae</option>
+                    <option value="Country">Country</option>
+                    <option value="Folk">Folk</option>
+                    <option value="Blues">Blues</option>
+                    <option value="Funk">Funk</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Dance">Dance</option>
+                    <option value="Alternative">Alternative</option>
+                    <option value="R&B">R&B</option>
+                    <option value="Soul">Soul</option>
+                    <option value="Techno">Techno</option>
+                    <option value="Reggaeton">Reggaeton</option>
+                    <option value="Punk">Punk</option>
+                    <option value="Gospel">Gospel</option>
+                    <option value="Disco">Disco</option>
+                    <option value="Ska">Ska</option>
+                </select><br><br>
+
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModalArtista()">Chiudi</button>
+                    <button type="button" onclick="submitUpdateArtista()">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function disableEnterKey(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();  // Impedisce l'azione predefinita
+                return false;
+            }
+        }
+    </script>
+</body>
+
+</html>

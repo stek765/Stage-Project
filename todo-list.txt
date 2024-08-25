@@ -1,0 +1,12 @@
+robe da fare:
+- Registrazione -> fai anche il login -> bottone profilo
+- ⁠modifica profilo
+- ⁠La mappa scarica da js info eventi e coordinate
+- ⁠Controllo che solo un locale può creare un evento
+- ⁠Partecipa evento: solo un artista può candidarsi
+- ⁠( per entrambi scelta di quale locale/artista usare)
+- ⁠Nei tuoi eventi: Se hai creato eventi, allora ti compaiono i tuoi eventi creati (sia quelli vecchi-> passato, che quelli da fare-> pending)
+- ⁠stesso discorso per gli eventi a cui gli artisti si sono candidati -> hanno 3 stati: in attesta, Accettata, Rifiutata
+
+
+<div id="response" class="mt-3"></div>

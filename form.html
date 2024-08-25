@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
+    <title>Registrazione - Bar&MusicLive</title>
+    <link rel="stylesheet" href="./static/form.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function verifyAuth() {
+            return new Promise(function (resolve, reject) {
+                $.ajax({
+                    url: './connection/check_auth.php', // Modifica con il percorso corretto del tuo script PHP
+                    type: 'GET',
+                    success: function (response) {
+                        response = JSON.parse(response);
+                        resolve(response.authenticated);
+                    },
+                    error: function () {
+                        reject('Errore durante la verifica dell\'autenticazione.');
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            verifyAuth().then(function (isAuthenticated) {
+                var authLinksDiv = document.getElementById('pulsantiAuth');
+                if (!isAuthenticated) {
+                    Swal.fire('Errore', 'Prima di poterti iscrivere come artista o locale è necessario che tu sia loggato.', 'error')
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = './login.html';
+                            }
+                        });
+                }
+            }).catch(function (error) {
+                console.error(error);
+            });
+
+            $('form').on('submit', function (event) {
+                event.preventDefault(); // Previene il comportamento predefinito del form
+
+                if (document.getElementById('musician-form').style.display == 'block') {
+                    //musician
+                    //tipo_artista
+                    //nome_arte
+                    //genere_musicale
+                    //band?
+                    var type = 'musician';
+                    var tipo_artista = $('#tipo-artista').val();
+                    var nome_arte = $('#nome-arte').val();
+                    var genere_musicale = $('#genere').val();
+
+                    var membri_band = [];
+                    var membri_band_elements = document.querySelectorAll('.band-member');
+                    membri_band_elements.forEach(function (member) {
+                        var nomeArtista = member.querySelector('input[name="nome_artista[]"]').value;
+                        var ruoloArtista = member.querySelector('input[name="ruolo_artista[]"]').value;
+                        membri_band.push({ nome: nomeArtista, ruolo: ruoloArtista });
+                    });
+
+                    $.ajax({
+                        url: './connection/register.php',
+                        type: 'POST',
+                        data: {
+                            type: type,
+                            tipo_artista: tipo_artista,
+                            nome_arte: nome_arte,
+                            genere_musicale: genere_musicale,
+                            membri_band: JSON.stringify(membri_band)
+                        },
+                        success: function (response) {
+                            if (response.trim() === 'success') {
+                                window.location.href = 'index.html';
+                            } else {
+                                $('#response').html(response).addClass('alert alert-danger');
+                            }
+                        },
+                        error: function () {
+                            $('#response').html('Errore durante la registrazione.').addClass('alert alert-danger');
+                        }
+                    });
+                } else {
+                    //locale
+                    //nome_locale
+                    //indirizzo
+                    var type = 'venue';
+                    var nome_locale = $('#nomeLocale').val();
+                    var indirizzo = $('#indirizzo').val();
+                    $.ajax({
+                        url: './connection/register.php',
+                        type: 'POST',
+                        data: {
+                            type: type,
+                            nome_locale: nome_locale,
+                            indirizzo: indirizzo,
+                        },
+                        success: function (response) {
+                            if (response.trim() === 'success') {
+                                window.location.href = 'index.html';
+                            } else {
+                                $('#response').html(response).addClass('alert alert-danger');
+                            }
+                        },
+                        error: function () {
+                            $('#response').html('Errore durante la registrazione.').addClass('alert alert-danger');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <a href="profilo.html"><img src="./IMG/arrow_4.png" width="7%" height="13%"></a>
+
+        <h1>Registrazione</h1>
+        <div class="role-selection">
+            <button onclick="showForm('musician')">Musicista</button>
+            <button onclick="showForm('venue')">Locale</button>
+        </div>
+
+        <form id="musician-form" class="registration-form" style="display:none;">
+            <h3> Registrazione Artista/i</h3>
+
+            <select name="Tipo Artista" id="tipo-artista" onchange="showBandSection()" required>
+                <option value="">Tipo</option>
+                <option value="Band">Band</option>
+                <option value="Musicista">Musicista</option>
+            </select>
+
+            <input type="text"
+                style="background-color: rgba(232, 232, 232, 0.33); border-radius: 25px; text-align: center; width: calc(100% - 59px);"
+                id="nome-arte" name="Nome D'arte" placeholder="Nome D'arte" required>
+
+            <select id="genere" name="genere" required>
+                <option value="">Genere</option>
+                <option value="Rock" selected>Rock</option>
+                <option value="RockLeg">Rock leggero</option>
+                <option value="Pop">Pop</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Classica">Classica</option>
+                <option value="Hip Hop">Hip Hop</option>
+                <option value="Rap">Rap</option>
+                <option value="Metal">Metal</option>
+                <option value="Indie">Indie</option>
+                <option value="Reggae">Reggae</option>
+                <option value="Country">Country</option>
+                <option value="Folk">Folk</option>
+                <option value="Blues">Blues</option>
+                <option value="Funk">Funk</option>
+                <option value="Electronic">Electronic</option>
+                <option value="Dance">Dance</option>
+                <option value="Alternative">Alternative</option>
+                <option value="R&B">R&B</option>
+                <option value="Soul">Soul</option>
+                <option value="Techno">Techno</option>
+                <option value="Reggaeton">Reggaeton</option>
+                <option value="Punk">Punk</option>
+                <option value="Gospel">Gospel</option>
+                <option value="Disco">Disco</option>
+                <option value="Ska">Ska</option>
+            </select>
+
+            <!-- Sezione aggiuntiva per Band -->
+            <div id="band-section" style="display:none;">
+                <div id="band-members">
+                    <!-- Qui saranno aggiunti dinamicamente i membri della band -->
+                </div>
+                <button type="button" onclick="addBandMember()"
+                    style="padding: 8px 20px; margin-bottom: 19px; border-radius: 0; background-color: rgba(7, 162, 164, 0.99);">
+                    Aggiungi Membro
+                </button>
+            </div>
+
+            <button type="submit" style="width:100%; font-size: 90%;">Registrati</button>
+        </form>
+
+        <form id="venue-form" class="registration-form" style="display:none;">
+            <h3> Registrazione Locale</h3>
+            <input type="text"
+                style="background-color: rgba(232, 232, 232, 0.33); border-radius: 25px; text-align: center; width: calc(100% - 59px);"
+                id="nomeLocale" name="nome_locale" placeholder="Nome del Locale" required>
+            <input type="text"
+                style="background-color: rgba(232, 232, 232, 0.33); border-radius: 25px; text-align: center; width: calc(100% - 59px);"
+                id="indirizzo" name="indirizzo" placeholder="Indirizzo Locale" required>
+            <!--<input type="time" name="orario_aperto" placeholder="Orario di Apertura" required>
+            <input type="time" name="orario_chiuso" placeholder="Orario di Chiusura" required>-->
+            <button type="submit" style="width:100%; font-size: 90%;">Registrati</button>
+        </form>
+        <div id="response" class="mt-3"></div>
+    </div>
+
+    <script>
+        const images = [
+            './IMG/guitar.jpg',
+            './IMG/drums.jpg',
+            './IMG/piano.jpg',
+            './IMG/sax.jpg',
+            './IMG/viol1.jpg',
+            './IMG/lucid_guitar.jpg'
+        ];
+
+        function changeBackground() {
+            const randomIndex = Math.floor(Math.random() * (images.length - 1)) + 1; // Inizia dalla seconda immagine
+            document.body.style.backgroundImage = `url('${images[randomIndex]}')`;
+        }
+
+        // Imposta la prima immagine nell'array come background iniziale
+        document.body.style.backgroundImage = `url('${images[0]}')`;
+
+        // Avvia la rotazione delle immagini ogni 20 secondi
+        setInterval(changeBackground, 20000); // 20 secondi = 20000 millisecondi
+    </script>
+
+    <script>
+        function showForm(role) {
+            document.getElementById('musician-form').style.display = 'none';
+            document.getElementById('venue-form').style.display = 'none';
+
+            if (role === 'musician') {
+                document.getElementById('musician-form').style.display = 'block';
+            } else if (role === 'venue') {
+                document.getElementById('venue-form').style.display = 'block';
+            }
+        }
+
+        function showBandSection() {
+            var tipoArtista = document.getElementById('tipo-artista').value;
+            var bandSection = document.getElementById('band-section');
+
+            if (tipoArtista === 'Band') {
+                bandSection.style.display = 'block';
+            } else {
+                bandSection.style.display = 'none';
+            }
+        }
+
+        var count = 0;
+        function addBandMember() {
+            count += 1;
+            var bandMembersDiv = document.getElementById('band-members');
+
+            // Creazione del wrapper per il membro della band
+            var memberWrapper = document.createElement('div');
+            memberWrapper.classList.add('band-member');
+
+            // Campi input per il nome e il ruolo del membro
+            var inputNome = document.createElement('input');
+            inputNome.id = "n" + count;
+            inputNome.type = 'text';
+            inputNome.name = 'nome_artista[]'; // Utilizza array per i nomi per gestire più membri
+            inputNome.placeholder = 'Nome Artista';
+            inputNome.required = true;
+            inputNome.classList.add('band-input'); // Aggiungiamo una classe per lo stile personalizzato
+
+            var inputRuolo = document.createElement('input');
+            inputRuolo.id = "r" + count;
+            inputRuolo.type = 'text';
+            inputRuolo.name = 'ruolo_artista[]'; // Utilizza array per i ruoli
+            inputRuolo.placeholder = 'Ruolo (es. Chitarrista)';
+            inputRuolo.required = true;
+            inputRuolo.classList.add('band-input'); // Aggiungiamo una classe per lo stile personalizzato
+
+            // Bottone per rimuovere il membro della band
+            var removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = '-';
+            removeButton.classList.add('remove-button'); // Aggiungiamo una classe per lo stile personalizzato
+            removeButton.onclick = function () {
+                memberWrapper.remove(); // Rimuove il wrapper del membro
+                count -= 1;
+            };
+
+            // Aggiunta dei campi al wrapper
+            memberWrapper.appendChild(inputNome);
+            memberWrapper.appendChild(inputRuolo);
+            memberWrapper.appendChild(removeButton);
+
+            // Aggiunta del wrapper alla sezione dei membri della band
+            bandMembersDiv.appendChild(memberWrapper);
+        }
+    </script>
+</body>
+
+</html>

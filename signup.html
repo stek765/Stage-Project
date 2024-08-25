@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/signup.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('form').on('submit', function (event) {
+                event.preventDefault(); // Previene il comportamento predefinito del form
+
+                var type = 'user';
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var confirmPassword = $('#confirmPassword').val();
+                var nationality = $('#nationality').val();
+                var email = $('#email').val();
+
+                if (password !== confirmPassword) {
+                    $('#response').html('Le password non corrispondono.').addClass('alert alert-danger');
+                    return;
+                }
+
+                $.ajax({
+                    url: './connection/register.php',
+                    type: 'POST',
+                    data: {
+                        type: type,
+                        full_name: username,
+                        password: password,
+                        nationality: nationality,
+                        email: email
+                    },
+                    success: function (response) {
+                        if (response.trim() === 'Success') {
+                            window.location.href = 'index.html';
+                        } else {
+                            console.log(type, username, password, nationality, email);
+                            $('#response').html(response).addClass('alert alert-danger');
+                        }
+                    },
+                    error: function () {
+                        $('#response').html('Errore durante la registrazione.').addClass('alert alert-danger');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+   
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4" style="width: 90% !important;">
+            <div class="signup-container">
+                <div class="signup-header">
+                    <h3>Sign Up</h3>
+                    <p>Create a new account</p>
+                </div>
+                <form>
+                    <div class="form-group">
+                        <input type="text" id="username" class="form-control" placeholder="Full Name" required value="user2">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="email" class="form-control" placeholder="Email" required value="email@m.com">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" class="form-control" placeholder="Password" required value="password">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm Password" required value="password">
+                    </div>
+                    <!-- Campo per la selezione della nazionalità -->
+                    <div class="form-group">
+                        <select id="nationality" class="form-control" required style="padding-bottom: 0; padding-top: .1rem;">
+                            <option value="">Select Nationality</option>
+                            <option value="AL" selected>Albania</option>
+                            <option value="AD">Andorra</option>
+                            <option value="AT">Austria</option>
+                            <option value="BE">Belgio</option>
+                            <option value="BY">Bielorussia</option>
+                            <option value="BA">Bosnia ed Erzegovina</option>
+                            <option value="BG">Bulgaria</option>
+                            <option value="CY">Cipro</option>
+                            <option value="HR">Croazia</option>
+                            <option value="DK">Danimarca</option>
+                            <option value="EE">Estonia</option>
+                            <option value="FI">Finlandia</option>
+                            <option value="FR">Francia</option>
+                            <option value="DE">Germania</option>
+                            <option value="GR">Grecia</option>
+                            <option value="IE">Irlanda</option>
+                            <option value="IS">Islanda</option>
+                            <option value="IT">Italia</option>
+                            <option value="XK">Kosovo</option>
+                            <option value="LV">Lettonia</option>
+                            <option value="LI">Liechtenstein</option>
+                            <option value="LT">Lituania</option>
+                            <option value="LU">Lussemburgo</option>
+                            <option value="MK">Macedonia del Nord</option>
+                            <option value="MT">Malta</option>
+                            <option value="MD">Moldavia</option>
+                            <option value="MC">Monaco</option>
+                            <option value="ME">Montenegro</option>
+                            <option value="NO">Norvegia</option>
+                            <option value="NL">Paesi Bassi</option>
+                            <option value="PL">Polonia</option>
+                            <option value="PT">Portogallo</option>
+                            <option value="GB">Regno Unito</option>
+                            <option value="CZ">Repubblica Ceca</option>
+                            <option value="RO">Romania</option>
+                            <option value="RU">Russia</option>
+                            <option value="SM">San Marino</option>
+                            <option value="RS">Serbia</option>
+                            <option value="SK">Slovacchia</option>
+                            <option value="SI">Slovenia</option>
+                            <option value="ES">Spagna</option>
+                            <option value="SE">Svezia</option>
+                            <option value="CH">Svizzera</option>
+                            <option value="UA">Ucraina</option>
+                            <option value="HU">Ungheria</option>
+                            <option value="VA">Vaticano</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-block btn-signup">Sign Up</button>
+                </form>
+                <div id="response" class="mt-3"></div>
+                <div class="footer">
+                    <p>Already have an account? <a href="login.html">Log In</a></p>
+                    <p style="font-size: 16px; padding-top:20px;"><a href="index.html" style="text-decoration: underline;">Back to Home</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
