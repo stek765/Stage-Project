@@ -31,6 +31,18 @@ Stage-Project is a comprehensive platform that allows musicians and venues to co
 - **Social Media Integration:** Integration with social media platforms to share events and updates directly.
 
 
+## How to run it
+
+- Get the db to run
+- Install Xamp, you'll need to start apache and mysql
+- In order to use it, the directory has to be in the xamp path: (example: D:\app\xamp\htdocs\Stage-Progect
+- Last, you can connect to http://localhost/Stage-Progect/index.html
+
+
+
+
+
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you'd like to contribute to this project, please contact me -> emailto: stefanozanolli765@gmail.com
