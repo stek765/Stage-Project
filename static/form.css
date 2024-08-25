@@ -1,0 +1,222 @@
+body {
+    background: linear-gradient(99deg, #9395bb 0%, #54b7d4 100%);
+    background-size: cover;
+    /* Imposta la posizione dell'immagine di sfondo al centro */
+    background-position: center;
+    /* Fai sì che l'immagine di sfondo rimanga fissa durante lo scrolling */
+    background-attachment:fixed;
+    /* Imposta dimensioni fisse per il background */
+    transition: background-image 2s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+
+.container {
+    width: 85% !important;
+    max-width: 500px;
+    max-height: 90vh; /* Impedisce che la container superi l'altezza della finestra del browser */
+    background-color: rgb(233 233 234 / 88%);
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    overflow: auto; /* Abilita lo scrolling se il contenuto supera l'altezza della container */
+    position: fixed; /* Cambiato da absolute a fixed */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box; /* Assicura che padding e bordi siano inclusi nelle dimensioni totali */
+}
+
+
+
+h1 {
+    text-align: center;
+    color: #323535;
+    margin-bottom: 30px;
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.role-selection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centra il contenuto verticalmente */
+    margin-bottom: 20px;
+}
+
+.role-selection button {
+    flex: 1;
+    padding: 15px 20px;
+    background-color: #3246d4f5;
+    font-size: 90%;
+    border: none;
+    color: #fff;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 2%;
+    transition: background-color 0.3s;
+    text-align: center; /* Centra il testo orizzontalmente */
+}
+
+.role-selection button:hover {
+    background-color: #121f81ed;
+}
+
+.registration-form {
+   
+    max-width: 400px; /* Imposta una larghezza massima per i form */
+    padding: 20px; /* Aggiungi spazio interno */
+    background-color: white; /* Cambia il colore dello sfondo dei form */
+    border-radius: 10px; /* Arrotonda i bordi */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* Aggiungi ombra */
+}
+
+.registration-form.active {
+    display: block;
+}
+
+.registration-form h3 {
+    font-size: 21px;
+    font-family: fangsong;
+    color: #8757e7ed;
+    margin-bottom: 20px;
+    font-weight: 600;
+    padding-left: 2%;
+}
+
+.registration-form input,
+.registration-form select,
+.registration-form textarea {
+    width: calc(100% - 17px);
+    padding: 15px 20px;
+    
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: rgba(20, 36, 219, 0.09);
+    box-shadow: none;
+    font-size: 15px;
+}
+
+.registration-form input:focus,
+.registration-form select:focus,
+.registration-form textarea:focus {
+    background-color: rgba(255, 255, 255, 0.9);
+    outline: none;
+}
+
+.registration-form button {
+   /* width: calc(100% - 40px);*/
+    padding: 15px 20px;
+    background-color: #3246d4f5;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.registration-form button:hover {
+    background-color: #121f81ed;
+}
+
+.form-group p {
+    color: #dc3545;
+    margin-top: 5px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #666;
+}
+
+
+
+/* Stili per schermi più piccoli */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .role-selection {
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .role-selection button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .registration-form h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .registration-form input,
+    .registration-form select,
+    .registration-form textarea {
+    
+        padding: 10px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+
+    .registration-form button {
+        width: 100%;
+        padding: 12px;
+    }
+}
+
+.band-member {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.band-member input {
+    flex: 1;
+    padding: 12px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.band-member button {
+    padding: 8px 12px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.band-member button:hover {
+    background-color: #c82333;
+}
+
+
+
+
+.remove-button {
+    font-size: 10px;
+    padding: 6px 10px !important;
+    margin-bottom: 19px;    
+}

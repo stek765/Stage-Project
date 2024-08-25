@@ -1,0 +1,30 @@
+body {
+    background: linear-gradient(178deg, #e2edf6 0%, #da6d44bf 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+    height: 100%; /* Imposta l'altezza del body a 100% dell'altezza della viewport */
+    margin: 0; /* Rimuove il margine predefinito */
+}
+
+#create-event-section {
+    background-color:rgb(255 255 255 / 66%); /* Utilizza un bianco con opacità */
+    padding: 20px; /* Aggiunge spazio interno per separare dal testo circostante */
+    margin-top: 20px; /* Aggiunge margine superiore per ulteriore separazione */
+}
+
+.card-img-top {
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    flex: 1;
+}
+
+
